@@ -1,0 +1,610 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seven Hills Recovery Dashboard</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#0b1220;
+    color:white;
+}
+
+.sidebar{
+    width:250px;
+    height:100vh;
+    background:#111827;
+    position:fixed;
+    left:0;
+    top:0;
+    padding:20px;
+    box-sizing:border-box;
+}
+
+.sidebar h1{
+    font-size:22px;
+}
+
+.sidebar button{
+    width:100%;
+    margin-bottom:10px;
+    padding:12px;
+    border:none;
+    border-radius:8px;
+    background:#1f2937;
+    color:white;
+    cursor:pointer;
+    text-align:left;
+}
+
+.sidebar button:hover{
+    background:#2563eb;
+}
+
+.main{
+    margin-left:270px;
+    padding:20px;
+}
+
+.section{
+    display:none;
+}
+
+.section.active{
+    display:block;
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:20px;
+}
+
+.card{
+    background:#1f2937;
+    padding:20px;
+    border-radius:12px;
+}
+
+.big-number{
+    font-size:36px;
+    font-weight:bold;
+}
+
+.small-text{
+    margin-top:8px;
+    color:#9ca3af;
+    font-size:14px;
+}
+
+input{
+    width:100%;
+    padding:10px;
+    margin-top:10px;
+    border:none;
+    border-radius:8px;
+    background:#374151;
+    color:white;
+    box-sizing:border-box;
+}
+
+button.action{
+    margin-top:10px;
+    padding:10px 16px;
+    border:none;
+    border-radius:8px;
+    background:#2563eb;
+    color:white;
+    cursor:pointer;
+}
+
+button.delete-btn{
+    background:#dc2626;
+    padding:6px 10px;
+    border:none;
+    border-radius:6px;
+    color:white;
+    cursor:pointer;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:15px;
+}
+
+th,td{
+    border:1px solid #374151;
+    padding:10px;
+}
+
+
+.sidebar.collapsed{
+    width:0;
+    overflow:hidden;
+    padding:0;
+}
+
+.main.expanded{
+    margin-left:20px;
+}
+</style>
+
+</head>
+
+
+<body>
+
+<button id="floatingMenuBtn" onclick="toggleSidebar()"
+style="position:fixed;top:10px;left:10px;z-index:9999;padding:10px 14px;border:none;border-radius:8px;background:#2563eb;color:white;cursor:pointer;">
+☰ Menu
+</button>
+
+
+
+<div class="sidebar" id="sidebar">
+
+
+
+<h1>Seven Hills Recovery</h1>
+
+<button onclick="showSection('dashboard')">Dashboard</button>
+<button onclick="showSection('receipting')">Receipting Tracker</button>
+<button onclick="showSection('sorting')">Sorting Progress</button>
+<button onclick="showSection('finalboxes')">Final Box Count Per Style</button>
+<button onclick="showSection('labour')">Labour Tracker</button>
+<button onclick="showSection('supplies')">Supplies Checklist</button>
+
+</div>
+
+<div class="main">
+
+<div id="dashboard" class="section active">
+
+<h1>Console Recovery Dashboard</h1>
+
+<input type="number" id="totalPalletsInput" placeholder="Update Total Pallets">
+<input type="number" id="totalBoxesInput" placeholder="Update Total Boxes">
+
+
+<input type="number" id="transitUnitsInput" placeholder="Update Units In Transit">
+
+<button class="action" onclick="updateTotals()">Update Totals</button>
+
+
+<div class="cards">
+
+<div class="card">
+<h2>Total Pallets</h2>
+<div class="big-number" id="totalPallets">103</div>
+</div>
+
+
+<div class="card">
+<h2>Total Boxes</h2>
+<div class="big-number" id="totalBoxes">3000</div>
+</div>
+
+<div class="card">
+<h2>Units In Transit</h2>
+<div class="big-number" id="unitsTransit">0</div>
+</div>
+
+
+<div class="card">
+<h2>Receipted Pallets</h2>
+<div class="big-number" id="receipted">0</div>
+<div class="small-text" id="receiptedPercent">0%</div>
+</div>
+
+<div class="card">
+<h2>Receipted Boxes</h2>
+<div class="big-number" id="receiptedBoxes">0</div>
+<div class="small-text" id="boxPercent">0%</div>
+</div>
+
+<div class="card">
+<h2>Rough Sorted</h2>
+<div class="big-number" id="rough">0</div>
+<div class="small-text" id="roughPercent">0%</div>
+</div>
+
+<div class="card">
+<h2>Finished Styles</h2>
+<div class="big-number" id="finishedStyles">0</div>
+</div>
+
+<div class="card">
+<h2>Total Labour Hours</h2>
+<div class="big-number" id="labourTotal">0</div>
+</div>
+
+<div class="card">
+<h2>Pallets Per Hour</h2>
+<div class="big-number" id="palletsPerHour">0</div>
+</div>
+
+<div class="card">
+<h2>Boxes Per Hour</h2>
+<div class="big-number" id="boxesPerHour">0</div>
+</div>
+
+<div class="card">
+<h2>Estimated 8hr Days Remaining</h2>
+<div class="big-number" id="daysRemaining">0</div>
+</div>
+
+</div>
+</div>
+
+<div id="receipting" class="section">
+
+<h1>Receipting Tracker</h1>
+
+<input type="date" id="receiptDate">
+<input type="number" id="receiptInput" placeholder="Receipted pallets">
+<input type="number" id="boxInput" placeholder="Receipted boxes">
+
+<button class="action" onclick="updateReceipts()">Add Entry</button>
+
+<table id="receiptingTable">
+<tr>
+<th>Date</th>
+<th>Pallets</th>
+<th>Boxes</th>
+<th>Delete</th>
+</tr>
+</table>
+
+</div>
+
+<div id="sorting" class="section">
+
+<h1>Sorting Progress</h1>
+
+<input type="date" id="sortingDate">
+<input type="number" id="roughInput" placeholder="Rough sorted pallets">
+
+<button class="action" onclick="updateSorting()">Add Entry</button>
+
+<table id="sortingTable">
+<tr>
+<th>Date</th>
+<th>Pallets</th>
+<th>Delete</th>
+</tr>
+</table>
+
+</div>
+
+<div id="finalboxes" class="section">
+
+<h1>Final Box Count Per Style</h1>
+
+<input type="text" id="styleName" placeholder="Style name">
+<input type="number" id="styleBoxes" placeholder="Total boxes">
+
+<button class="action" onclick="addStyle()">Add Style</button>
+
+<table id="styleTable">
+<tr>
+<th>Style</th>
+<th>Boxes</th>
+<th>Delete</th>
+</tr>
+</table>
+
+</div>
+
+<div id="labour" class="section">
+
+<h1>Labour Tracker</h1>
+
+<input type="date" id="labourDate">
+<input type="text" id="staffName" placeholder="Staff name">
+<input type="number" id="hoursWorked" placeholder="Hours worked">
+
+<button class="action" onclick="addLabour()">Add Entry</button>
+
+<table id="labourTable">
+<tr>
+<th>Date</th>
+<th>Staff</th>
+<th>Hours</th>
+<th>Delete</th>
+</tr>
+</table>
+
+</div>
+
+<div id="supplies" class="section">
+
+<h1>Supplies Checklist</h1>
+
+<input type="text" id="supplyInput" placeholder="Add supply item">
+
+<button class="action" onclick="addSupply()">Add Supply Item</button>
+
+<table id="suppliesTable">
+
+<tr>
+<th>Item</th>
+<th>Ready</th>
+<th>Delete</th>
+</tr>
+
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+let TOTAL_PALLETS = 103;
+let TOTAL_BOXES = 3000;
+let UNITS_TRANSIT = 0;
+
+let receipted = 0;
+let receiptedBoxes = 0;
+let rough = 0;
+let finishedStyles = 0;
+let labourTotal = 0;
+
+function showSection(id){
+
+    document.querySelectorAll('.section').forEach(section => {
+        section.classList.remove('active');
+    });
+
+    document.getElementById(id).classList.add('active');
+}
+
+function updateTotals(){
+
+    const pallets = Number(document.getElementById('totalPalletsInput').value || TOTAL_PALLETS);
+    const boxes = Number(document.getElementById('totalBoxesInput').value || TOTAL_BOXES);
+    const transit = Number(document.getElementById('transitUnitsInput').value || UNITS_TRANSIT);
+
+    TOTAL_PALLETS = pallets;
+    TOTAL_BOXES = boxes;
+    UNITS_TRANSIT = transit;
+
+    document.getElementById('totalPallets').innerText = TOTAL_PALLETS;
+    document.getElementById('totalBoxes').innerText = TOTAL_BOXES;
+    document.getElementById('unitsTransit').innerText = UNITS_TRANSIT;
+
+    refreshMetrics();
+}
+
+function refreshMetrics(){
+
+    document.getElementById('receipted').innerText = receipted;
+    document.getElementById('receiptedBoxes').innerText = receiptedBoxes;
+    document.getElementById('rough').innerText = rough;
+    document.getElementById('finishedStyles').innerText = finishedStyles;
+    document.getElementById('labourTotal').innerText = labourTotal;
+
+    document.getElementById('receiptedPercent').innerText =
+        ((receipted / TOTAL_PALLETS) * 100).toFixed(1) + '%';
+
+    document.getElementById('boxPercent').innerText =
+        ((receiptedBoxes / TOTAL_BOXES) * 100).toFixed(1) + '%';
+
+    document.getElementById('roughPercent').innerText =
+        ((rough / TOTAL_PALLETS) * 100).toFixed(1) + '%';
+
+    let palletsPerHour = labourTotal > 0 ? (receipted / labourTotal).toFixed(2) : 0;
+    let boxesPerHour = labourTotal > 0 ? (receiptedBoxes / labourTotal).toFixed(2) : 0;
+
+    document.getElementById('palletsPerHour').innerText = palletsPerHour;
+    document.getElementById('boxesPerHour').innerText = boxesPerHour;
+
+    let remainingBoxes = TOTAL_BOXES - receiptedBoxes;
+
+    let estimatedDays = boxesPerHour > 0
+        ? (remainingBoxes / (boxesPerHour * 8)).toFixed(1)
+        : 0;
+
+    document.getElementById('daysRemaining').innerText = estimatedDays;
+}
+
+function deleteRow(button){
+    button.parentElement.parentElement.remove();
+}
+
+function updateReceipts(){
+
+    const date = document.getElementById('receiptDate').value;
+    const pallets = Number(document.getElementById('receiptInput').value || 0);
+    const boxes = Number(document.getElementById('boxInput').value || 0);
+
+    receipted += pallets;
+    receiptedBoxes += boxes;
+
+    const table = document.getElementById('receiptingTable');
+
+    const row = table.insertRow();
+
+    row.insertCell(0).innerHTML = date;
+    row.insertCell(1).innerHTML = pallets;
+    row.insertCell(2).innerHTML = boxes;
+
+    row.insertCell(3).innerHTML =
+        `<button class="delete-btn"
+        onclick="removeReceipt(this, ${pallets}, ${boxes})">Delete</button>`;
+
+    refreshMetrics();
+}
+
+function removeReceipt(button, pallets, boxes){
+
+    receipted -= pallets;
+    receiptedBoxes -= boxes;
+
+    deleteRow(button);
+
+    refreshMetrics();
+}
+
+function updateSorting(){
+
+    const date = document.getElementById('sortingDate').value;
+    const pallets = Number(document.getElementById('roughInput').value || 0);
+
+    rough += pallets;
+
+    const table = document.getElementById('sortingTable');
+
+    const row = table.insertRow();
+
+    row.insertCell(0).innerHTML = date;
+    row.insertCell(1).innerHTML = pallets;
+
+    row.insertCell(2).innerHTML =
+        `<button class="delete-btn"
+        onclick="removeSorting(this, ${pallets})">Delete</button>`;
+
+    refreshMetrics();
+}
+
+function removeSorting(button, pallets){
+
+    rough -= pallets;
+
+    deleteRow(button);
+
+    refreshMetrics();
+}
+
+function addStyle(){
+
+    const style = document.getElementById('styleName').value;
+    const boxes = document.getElementById('styleBoxes').value;
+
+    finishedStyles += 1;
+
+    const table = document.getElementById('styleTable');
+
+    const row = table.insertRow();
+
+    row.insertCell(0).innerHTML = style;
+    row.insertCell(1).innerHTML = boxes;
+
+    row.insertCell(2).innerHTML =
+        `<button class="delete-btn"
+        onclick="removeStyle(this)">Delete</button>`;
+
+    refreshMetrics();
+}
+
+function removeStyle(button){
+
+    finishedStyles -= 1;
+
+    deleteRow(button);
+
+    refreshMetrics();
+}
+
+function addLabour(){
+
+    const date = document.getElementById('labourDate').value;
+    const staff = document.getElementById('staffName').value;
+    const hours = Number(document.getElementById('hoursWorked').value || 0);
+
+    labourTotal += hours;
+
+    const table = document.getElementById('labourTable');
+
+    const row = table.insertRow();
+
+    row.insertCell(0).innerHTML = date;
+    row.insertCell(1).innerHTML = staff;
+    row.insertCell(2).innerHTML = hours;
+
+    row.insertCell(3).innerHTML =
+        `<button class="delete-btn"
+        onclick="removeLabour(this, ${hours})">Delete</button>`;
+
+    refreshMetrics();
+}
+
+function removeLabour(button, hours){
+
+    labourTotal -= hours;
+
+    deleteRow(button);
+
+    refreshMetrics();
+}
+
+
+
+function toggleSidebar(){
+
+    const sidebar = document.getElementById('sidebar');
+    const main = document.querySelector('.main');
+
+    sidebar.classList.toggle('collapsed');
+    main.classList.toggle('expanded');
+}
+
+const defaultSupplies = [
+'14 Foldable Tables',
+'Laptop',
+'Laptop Charger',
+'2 Scanners',
+'Hotspot Dongle',
+'Mobile Desk',
+'Black Trolley for Second Scanner Station',
+'3 Extension Cords',
+'Power Board',
+'Pallet Jack',
+'2 Boxes Clear Wrap',
+'1 Box Black Wrap',
+'Box of Tape',
+'Tape Gun',
+'Box of Zebra Rolls',
+'Box of Markers'
+];
+
+function addSupplyRow(item){
+
+    const table = document.getElementById('suppliesTable');
+
+    const row = table.insertRow();
+
+    row.insertCell(0).innerHTML = item;
+    row.insertCell(1).innerHTML = '<input type="checkbox">';
+    row.insertCell(2).innerHTML =
+        `<button class="delete-btn" onclick="deleteRow(this)">Delete</button>`;
+}
+
+function addSupply(){
+
+    const item = document.getElementById('supplyInput').value;
+
+    if(item === '') return;
+
+    addSupplyRow(item);
+
+    document.getElementById('supplyInput').value = '';
+}
+
+window.onload = function(){
+
+    defaultSupplies.forEach(item => {
+        addSupplyRow(item);
+    });
+};
+
+</script>
+
+
+</body>
+</html>
