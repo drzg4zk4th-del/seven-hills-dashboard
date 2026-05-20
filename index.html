@@ -1,0 +1,530 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Seven Hills Recovery Dashboard</title>
+
+<style>
+body {
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#0b1220;
+    color:white;
+}
+
+.sidebar {
+    position:fixed;
+    width:250px;
+    height:100vh;
+    background:#111827;
+    padding:20px;
+    box-sizing:border-box;
+    overflow:auto;
+}
+
+.sidebar.hidden {
+    display:none;
+}
+
+.sidebar button {
+    width:100%;
+    padding:12px;
+    margin-bottom:10px;
+    border:none;
+    border-radius:8px;
+    background:#1f2937;
+    color:white;
+    cursor:pointer;
+    text-align:left;
+}
+
+.sidebar button:hover {
+    background:#2563eb;
+}
+
+.main {
+    margin-left:270px;
+    padding:20px;
+}
+
+.main.full {
+    margin-left:20px;
+}
+
+.section {
+    display:none;
+}
+
+.section.active {
+    display:block;
+}
+
+.cards {
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+}
+
+.card {
+    background:#1f2937;
+    padding:20px;
+    border-radius:12px;
+}
+
+.big {
+    font-size:34px;
+    font-weight:bold;
+}
+
+.small {
+    color:#9ca3af;
+}
+
+table {
+    width:100%;
+    border-collapse:collapse;
+    margin-top:15px;
+}
+
+th,td {
+    border:1px solid #374151;
+    padding:10px;
+}
+
+input {
+    width:100%;
+    padding:10px;
+    margin-top:10px;
+    background:#374151;
+    color:white;
+    border:none;
+    border-radius:8px;
+    box-sizing:border-box;
+}
+
+.action {
+    margin-top:10px;
+    padding:10px 14px;
+    background:#2563eb;
+    border:none;
+    border-radius:8px;
+    color:white;
+    cursor:pointer;
+}
+
+.delete {
+    background:#dc2626;
+    border:none;
+    color:white;
+    padding:6px 10px;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+#menuBtn {
+    position:fixed;
+    right:10px;
+    top:10px;
+    z-index:999;
+}
+</style>
+</head>
+
+<body>
+
+<button id="menuBtn" class="action" onclick="toggleMenu()">☰ Menu</button>
+
+<div class="sidebar" id="sidebar">
+<h2>Seven Hills Recovery</h2>
+
+<button onclick="showSection('dashboard')">Dashboard</button>
+<button onclick="showSection('receipting')">Receipting</button>
+<button onclick="showSection('sorting')">Sorting</button>
+<button onclick="showSection('styles')">Final Box Count</button>
+<button onclick="showSection('labour')">Labour</button>
+<button onclick="showSection('plan')">Recovery Plan</button>
+<button onclick="showSection('supplies')">Supplies</button>
+
+</div>
+
+<div class="main" id="main">
+
+<div id="dashboard" class="section active">
+
+<h1>Dashboard</h1>
+
+<input type="number" id="totalPalletsInput" placeholder="Total Pallets">
+<input type="number" id="totalBoxesInput" placeholder="Total Boxes">
+<input type="number" id="transitInput" placeholder="Units In Transit">
+
+<button class="action" onclick="updateTotals()">Update Totals</button>
+
+<div class="cards">
+
+<div class="card">
+<h3>Total Pallets</h3>
+<div class="big" id="totalPallets">103</div>
+</div>
+
+<div class="card">
+<h3>Total Boxes</h3>
+<div class="big" id="totalBoxes">3000</div>
+</div>
+
+<div class="card">
+<h3>Units In Transit</h3>
+<div class="big" id="transit">0</div>
+</div>
+
+<div class="card">
+<h3>Receipted Pallets</h3>
+<div class="big" id="receipted">0</div>
+</div>
+
+<div class="card">
+<h3>Receipted Boxes</h3>
+<div class="big" id="receiptedBoxes">0</div>
+</div>
+
+<div class="card">
+<h3>Rough Sorted</h3>
+<div class="big" id="sorted">0</div>
+</div>
+
+<div class="card">
+<h3>Finished Styles</h3>
+<div class="big" id="stylesDone">0</div>
+</div>
+
+<div class="card">
+<h3>Labour Hours</h3>
+<div class="big" id="labourTotal">0</div>
+</div>
+
+</div>
+</div>
+
+<div id="receipting" class="section">
+<h1>Receipting</h1>
+
+<input type="date" id="receiptDate">
+<input type="number" id="receiptPallets" placeholder="Pallets">
+<input type="number" id="receiptBoxes" placeholder="Boxes">
+
+<button class="action" onclick="addReceipt()">Add Entry</button>
+
+<table id="receiptTable">
+<tr><th>Date</th><th>Pallets</th><th>Boxes</th><th>Delete</th></tr>
+</table>
+
+</div>
+
+<div id="sorting" class="section">
+<h1>Sorting</h1>
+
+<input type="date" id="sortDate">
+<input type="number" id="sortPallets" placeholder="Sorted Pallets">
+
+<button class="action" onclick="addSort()">Add Entry</button>
+
+<table id="sortTable">
+<tr><th>Date</th><th>Pallets</th><th>Delete</th></tr>
+</table>
+
+</div>
+
+<div id="styles" class="section">
+<h1>Final Box Count Per Style</h1>
+
+<input type="text" id="styleName" placeholder="Style">
+<input type="number" id="styleBoxes" placeholder="Boxes">
+
+<button class="action" onclick="addStyle()">Add Style</button>
+
+<table id="styleTable">
+<tr><th>Style</th><th>Boxes</th><th>Delete</th></tr>
+</table>
+
+</div>
+
+<div id="labour" class="section">
+<h1>Labour Tracker</h1>
+
+<input type="date" id="labourDate">
+<input type="text" id="labourName" placeholder="Staff Name">
+<input type="number" id="labourHours" placeholder="Hours">
+
+<button class="action" onclick="addLabour()">Add Entry</button>
+
+<table id="labourTable">
+<tr><th>Date</th><th>Name</th><th>Hours</th><th>Delete</th></tr>
+</table>
+
+</div>
+
+<div id="plan" class="section">
+<h1>Recovery Plan</h1>
+
+<input type="text" id="newDate" placeholder="New Date">
+<input type="text" id="newTask" placeholder="New Task">
+
+<button class="action" onclick="addPlanRow()">Add Row</button>
+
+<table id="planTable">
+<tr><th>Date</th><th>Plan</th><th>Save</th></tr>
+</table>
+
+</div>
+
+<div id="supplies" class="section">
+<h1>Supplies Checklist</h1>
+
+<input type="text" id="supplyInput" placeholder="Add Supply Item">
+
+<button class="action" onclick="addSupply()">Add Supply</button>
+
+<table id="suppliesTable">
+<tr><th>Item</th><th>Ready</th><th>Delete</th></tr>
+</table>
+
+</div>
+
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBXip6iu3HLYLdiXL1V34CDEx3vwnEPj1s",
+  authDomain: "seven-hills-dashboard.firebaseapp.com",
+  projectId: "seven-hills-dashboard",
+  storageBucket: "seven-hills-dashboard.firebasestorage.app",
+  messagingSenderId: "21891973719",
+  appId: "1:21891973719:web:ee1540efea5fd1203d5912",
+  measurementId: "G-MW08LRRBSJ"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+window.showSection = function(id){
+    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+}
+
+window.toggleMenu = function(){
+    document.getElementById('sidebar').classList.toggle('hidden');
+    document.getElementById('main').classList.toggle('full');
+}
+
+let totalPallets = 103;
+let totalBoxes = 3000;
+let transit = 0;
+let receipted = 0;
+let receiptedBoxes = 0;
+let sorted = 0;
+let stylesDone = 0;
+let labourTotal = 0;
+
+window.updateTotals = function(){
+    totalPallets = Number(document.getElementById('totalPalletsInput').value || totalPallets);
+    totalBoxes = Number(document.getElementById('totalBoxesInput').value || totalBoxes);
+    transit = Number(document.getElementById('transitInput').value || transit);
+
+    document.getElementById('totalPallets').innerText = totalPallets;
+    document.getElementById('totalBoxes').innerText = totalBoxes;
+    document.getElementById('transit').innerText = transit;
+}
+
+function removeRow(btn){
+    btn.closest('tr').remove();
+}
+
+window.addReceipt = function(){
+    const d=document.getElementById('receiptDate').value;
+    const p=Number(document.getElementById('receiptPallets').value||0);
+    const b=Number(document.getElementById('receiptBoxes').value||0);
+
+    receipted+=p;
+    receiptedBoxes+=b;
+
+    document.getElementById('receipted').innerText=receipted;
+    document.getElementById('receiptedBoxes').innerText=receiptedBoxes;
+
+    const row=document.getElementById('receiptTable').insertRow();
+    row.innerHTML=`<td>${d}</td><td>${p}</td><td>${b}</td><td><button class="delete" onclick="this.closest('tr').remove()">Delete</button></td>`;
+}
+
+window.addSort = function(){
+    const d=document.getElementById('sortDate').value;
+    const p=Number(document.getElementById('sortPallets').value||0);
+
+    sorted+=p;
+    document.getElementById('sorted').innerText=sorted;
+
+    const row=document.getElementById('sortTable').insertRow();
+    row.innerHTML=`<td>${d}</td><td>${p}</td><td><button class="delete" onclick="this.closest('tr').remove()">Delete</button></td>`;
+}
+
+window.addStyle = function(){
+    const s=document.getElementById('styleName').value;
+    const b=document.getElementById('styleBoxes').value;
+
+    stylesDone++;
+    document.getElementById('stylesDone').innerText=stylesDone;
+
+    const row=document.getElementById('styleTable').insertRow();
+    row.innerHTML=`<td>${s}</td><td>${b}</td><td><button class="delete" onclick="this.closest('tr').remove()">Delete</button></td>`;
+}
+
+window.addLabour = function(){
+    const d=document.getElementById('labourDate').value;
+    const n=document.getElementById('labourName').value;
+    const h=Number(document.getElementById('labourHours').value||0);
+
+    labourTotal+=h;
+    document.getElementById('labourTotal').innerText=labourTotal;
+
+    const row=document.getElementById('labourTable').insertRow();
+    row.innerHTML=`<td>${d}</td><td>${n}</td><td>${h}</td><td><button class="delete" onclick="this.closest('tr').remove()">Delete</button></td>`;
+}
+
+const defaultPlanRows = [
+["Monday 25/05/26", `48 storage pallets delivered to Seven Hills. Set up supplies and scanning.`],
+["Tuesday 26/05/26", `30 unreceipted pallets relocated. 12+ pallets receipted.`],
+["Wednesday 27/05/26", `30 receipted pallets relocated. 12+ pallets receipted. Possible 24 pallets if Chris comes.`],
+["Thursday 28/05/26", `Print replen. If accessories small, go directly to Seven Hills.`],
+["Friday 29/05/26", `12+ pallets receipted. Possible early Phase 2 start.`],
+["Saturday 30/05/26", `12+ pallets receipted. Possible 24 pallets.`],
+["Sunday 31/05/26", ``],
+["Monday 01/06/26", ``],
+["Tuesday 02/06/26", ``],
+["Wednesday 03/06/26", ``],
+["Thursday 04/06/26", ``],
+["Friday 05/06/26", ``],
+["Saturday 06/06/26", ``],
+["Sunday 07/06/26", ``],
+["Monday 08/06/26", ``],
+["Tuesday 09/06/26", ``],
+["Wednesday 10/06/26", ``],
+["Thursday 11/06/26", ``],
+["Friday 12/06/26", ``],
+["Saturday 13/06/26", ``],
+["Sunday 14/06/26", ``],
+["Monday 15/06/26", ``],
+["Tuesday 16/06/26", ``],
+["Wednesday 17/06/26", ``],
+["Thursday 18/06/26", ``],
+["Friday 19/06/26", ``],
+["Saturday 20/06/26", ``],
+["Sunday 21/06/26", ``],
+["Monday 22/06/26", ``],
+["Tuesday 23/06/26", ``],
+["Wednesday 24/06/26", ``],
+["Thursday 25/06/26", ``],
+["Friday 26/06/26", ``],
+["Saturday 27/06/26", ``],
+["Sunday 28/06/26", ``],
+["Monday 29/06/26", ``],
+["Tuesday 30/06/26", ``]
+];
+
+function renderPlanRow(date,plan){
+    const row=document.getElementById('planTable').insertRow();
+
+    row.innerHTML=`
+    <td contenteditable="true">${date}</td>
+    <td contenteditable="true">${plan}</td>
+    <td><button class="action" onclick="savePlan()">Save</button></td>
+    `;
+}
+
+window.addPlanRow=function(){
+    const d=document.getElementById('newDate').value;
+    const t=document.getElementById('newTask').value;
+
+    if(d==='') return;
+
+    renderPlanRow(d,t);
+}
+
+window.savePlan = async function(){
+    const rows=document.querySelectorAll('#planTable tr');
+
+    let data=[];
+
+    rows.forEach((row,index)=>{
+        if(index===0) return;
+
+        const cells=row.querySelectorAll('td');
+
+        data.push({
+            date:cells[0].innerHTML,
+            plan:cells[1].innerHTML
+        });
+    });
+
+    await setDoc(doc(db,"dashboard","recoveryPlan"), {
+        data:data
+    });
+
+    alert("Recovery plan saved");
+}
+
+async function loadPlan(){
+    const snapshot = await getDoc(doc(db,"dashboard","recoveryPlan"));
+
+    if(snapshot.exists()){
+        snapshot.data().data.forEach(item=>renderPlanRow(item.date,item.plan));
+    } else {
+        defaultPlanRows.forEach(item=>renderPlanRow(item[0],item[1]));
+    }
+}
+
+const defaultSupplies = [
+"14 Foldable Tables",
+"Laptop",
+"Laptop Charger",
+"2 Scanners",
+"Hotspot Dongle",
+"Mobile Desk",
+"Black Trolley for Second Scanner Station",
+"3 Extension Cords",
+"Power Board",
+"Pallet Jack"
+];
+
+function renderSupply(item){
+    const row=document.getElementById('suppliesTable').insertRow();
+
+    row.innerHTML=`
+    <td>${item}</td>
+    <td><input type="checkbox"></td>
+    <td><button class="delete" onclick="this.closest('tr').remove()">Delete</button></td>
+    `;
+}
+
+window.addSupply=function(){
+    const item=document.getElementById('supplyInput').value;
+    if(item==='') return;
+    renderSupply(item);
+}
+
+window.onload=async function(){
+    defaultSupplies.forEach(renderSupply);
+    await loadPlan();
+}
+
+</script>
+
+</body>
+</html>
