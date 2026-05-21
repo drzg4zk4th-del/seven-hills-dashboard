@@ -206,6 +206,7 @@ z-index:9999;
 <div class="card">
 <h2>Receipted Units</h2>
 <div class="big-number" id="receiptedUnits">0</div>
+<div class="small-text" id="unitsPercent">0%</div>
 </div>
 
 <div class="card">
@@ -855,6 +856,10 @@ document.getElementById('unitsTransit').innerText = UNITS_TRANSIT;
 document.getElementById('receipted').innerText = receipted;
 document.getElementById('receiptedBoxes').innerText = receiptedBoxes;
 document.getElementById('receiptedUnits').innerText = receiptedUnits;
+    document.getElementById('unitsPercent').innerText =
+UNITS_TRANSIT > 0
+? ((receiptedUnits / UNITS_TRANSIT) * 100).toFixed(1) + '%'
+: '0%';
 document.getElementById('rough').innerText = rough;
 document.getElementById('finishedStyles').innerText = finishedStyles;
 document.getElementById('labourTotal').innerText = labourTotal;
