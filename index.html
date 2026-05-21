@@ -921,6 +921,33 @@ function deleteRow(button){
 
 function updateReceipts(){
 
+    async function saveReceipting(){
+
+    const rows =
+        document.querySelectorAll('#receiptingTable tr');
+
+    let data = [];
+
+    rows.forEach((row,index)=>{
+
+        if(index === 0) return;
+
+        const cells = row.querySelectorAll('td');
+
+        data.push({
+            date: cells[0].innerHTML,
+            pallets: cells[1].innerHTML,
+            boxes: cells[2].innerHTML
+        });
+    });
+
+    await db.collection("dashboard")
+        .doc("receipting")
+        .set({
+            data:data
+        });
+}
+
     const date = document.getElementById('receiptDate').value;
     const pallets = Number(document.getElementById('receiptInput').value || 0);
     const boxes = Number(document.getElementById('boxInput').value || 0);
@@ -938,6 +965,37 @@ function updateReceipts(){
     `;
 
     refreshMetrics();
+
+    async function loadReceipting(){
+
+    const snapshot = await db.collection("dashboard")
+        .doc("receipting")
+        .get();
+
+    if(snapshot.exists){
+
+        const saved = snapshot.data().data;
+
+        saved.forEach(item=>{
+
+            const row =
+                document.getElementById('receiptingTable')
+                .insertRow();
+
+            row.innerHTML = `
+            <td>${item.date}</td>
+            <td>${item.pallets}</td>
+            <td>${item.boxes}</td>
+            <td></td>
+            `;
+
+            receipted += Number(item.pallets);
+            receiptedBoxes += Number(item.boxes);
+        });
+
+        refreshMetrics();
+    }
+}
 }
 
 function removeReceipt(button, pallets, boxes){
@@ -945,6 +1003,8 @@ function removeReceipt(button, pallets, boxes){
     receiptedBoxes -= boxes;
     deleteRow(button);
     refreshMetrics();
+
+    saveReceipting();
 }
 
 function updateSorting(){
@@ -1061,6 +1121,10 @@ window.onload = function(){
     defaultSupplies.forEach(item => {
         addSupplyRow(item);
     });
+
+     loadRecoveryPlan();
+
+    loadReceipting();
 }
 
 </script>
