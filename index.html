@@ -7,7 +7,100 @@
 
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<script>
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD9nPDHQpkPgxeQYfe-JVWemQg6CjbCBYM",
+  authDomain: "seven-hills-dashboard-e973d.firebaseapp.com",
+  projectId: "seven-hills-dashboard-e973d",
+  storageBucket: "seven-hills-dashboard-e973d.firebasestorage.app",
+  messagingSenderId: "1016653351453",
+  appId: "1:1016653351453:web:a2a1f597844adf51ba54f4"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.firestore();
+
+async function autoSaveRecoveryPlan(){
+
+    const rows = document.querySelectorAll('#planTable tr');
+
+    let data = [];
+
+    rows.forEach((row,index)=>{
+
+        if(index === 0) return;
+
+        const cells = row.querySelectorAll('td');
+
+        if(cells.length >= 2){
+
+            data.push({
+                date: cells[0].innerHTML,
+                plan: cells[1].innerHTML
+            });
+        }
+    });
+
+    await db.collection("dashboard")
+        .doc("recoveryPlan")
+        .set({
+            data:data
+        });
+}
+
+function attachAutoSave(){
+
+    const editableCells =
+        document.querySelectorAll('#planTable td');
+
+    editableCells.forEach(cell=>{
+
+        cell.addEventListener('input', ()=>{
+
+            autoSaveRecoveryPlan();
+        });
+    });
+}
+
+async function loadRecoveryPlan(){
+
+    const snapshot = await db.collection("dashboard")
+        .doc("recoveryPlan")
+        .get();
+
+    if(snapshot.exists){
+
+        const saved = snapshot.data().data;
+
+        const rows =
+            document.querySelectorAll('#planTable tr');
+
+        saved.forEach((item,index)=>{
+
+            if(index + 1 >= rows.length) return;
+
+            rows[index+1].cells[0].innerHTML =
+                item.date;
+
+            rows[index+1].cells[1].innerHTML =
+                item.plan;
+        });
+    }
+
+    attachAutoSave();
+}
+
+window.addEventListener('load', function(){
+
+    loadRecoveryPlan();
+});
+
+</script>
 
   <style>
     * {
