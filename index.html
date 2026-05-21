@@ -6,145 +6,167 @@
 
 <style>
 body{
-    margin:0;
-    font-family:Arial,sans-serif;
-    background:#0b1220;
-    color:white;
+margin:0;
+font-family:Arial,sans-serif;
+background:#0b1220;
+color:white;
 }
 
 .sidebar{
-    position:fixed;
-    top:0;
-    left:0;
-    width:250px;
-    height:100vh;
-    background:#111827;
-    padding:20px;
-    box-sizing:border-box;
-    overflow-y:auto;
+position:fixed;
+top:0;
+left:0;
+width:250px;
+height:100vh;
+background:#111827;
+padding:20px;
+box-sizing:border-box;
+overflow-y:auto;
 }
 
 .sidebar.hidden{
-    display:none;
+display:none;
 }
 
 .sidebar h1{
-    font-size:22px;
-    margin-top:0;
+font-size:22px;
+margin-top:0;
 }
 
 .sidebar button{
-    width:100%;
-    padding:12px;
-    margin-bottom:10px;
-    border:none;
-    border-radius:8px;
-    background:#1f2937;
-    color:white;
-    cursor:pointer;
-    text-align:left;
+width:100%;
+padding:12px;
+margin-bottom:10px;
+border:none;
+border-radius:8px;
+background:#1f2937;
+color:white;
+cursor:pointer;
+text-align:left;
 }
 
 .sidebar button:hover{
-    background:#2563eb;
+background:#2563eb;
 }
 
 .main{
-    margin-left:270px;
-    padding:20px;
+margin-left:270px;
+padding:20px;
 }
 
 .main.full{
-    margin-left:20px;
+margin-left:20px;
 }
 
 .section{
-    display:none;
+display:none;
 }
 
 .section.active{
-    display:block;
+display:block;
 }
 
 .cards{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-    gap:20px;
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+gap:20px;
 }
 
 .card{
-    background:#1f2937;
-    padding:20px;
-    border-radius:12px;
+background:#1f2937;
+padding:20px;
+border-radius:12px;
 }
 
 .big-number{
-    font-size:34px;
-    font-weight:bold;
+font-size:34px;
+font-weight:bold;
 }
 
 .small-text{
-    color:#9ca3af;
-    margin-top:8px;
+color:#9ca3af;
+margin-top:8px;
 }
 
 input, textarea{
-    width:100%;
-    padding:10px;
-    margin-top:10px;
-    border:none;
-    border-radius:8px;
-    background:#374151;
-    color:white;
-    box-sizing:border-box;
+width:100%;
+padding:10px;
+margin-top:10px;
+border:none;
+border-radius:8px;
+background:#374151;
+color:white;
+box-sizing:border-box;
 }
 
 .action{
-    margin-top:10px;
-    padding:10px 16px;
-    border:none;
-    border-radius:8px;
-    background:#2563eb;
-    color:white;
-    cursor:pointer;
+margin-top:10px;
+padding:10px 16px;
+border:none;
+border-radius:8px;
+background:#2563eb;
+color:white;
+cursor:pointer;
 }
 
 .delete-btn{
-    background:#dc2626;
-    border:none;
-    padding:6px 10px;
-    border-radius:6px;
-    color:white;
-    cursor:pointer;
+background:#dc2626;
+border:none;
+padding:6px 10px;
+border-radius:6px;
+color:white;
+cursor:pointer;
 }
 
 table{
-    width:100%;
-    border-collapse:collapse;
-    margin-top:15px;
+width:100%;
+border-collapse:collapse;
+margin-top:15px;
 }
 
 th,td{
-    border:1px solid #374151;
-    padding:10px;
-    vertical-align:top;
+border:1px solid #374151;
+padding:10px;
+vertical-align:top;
 }
 
 #menuToggle{
-    position:fixed;
-    top:10px;
-    right:10px;
-    z-index:9999;
+position:fixed;
+top:10px;
+right:10px;
+z-index:9999;
 }
 </style>
 
+</script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    
+</head>
 
 <script>
 
 const firebaseConfig = {
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyD9nPDHQpkPgxeQYfe-JVWemQg6CjbCBYM",
+    authDomain: "seven-hills-dashboard-e973d.firebaseapp.com",
+    projectId: "seven-hills-dashboard-e973d",
+    storageBucket: "seven-hills-dashboard-e973d.firebasestorage.app",
+    messagingSenderId: "1016653351453",
+    appId: "1:1016653351453:web:a2a1f597844adf51ba54f4"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+</script>
   apiKey: "AIzaSyD9nPDHQpkPgxeQYfe-JVWemQg6CjbCBYM",
   authDomain: "seven-hills-dashboard-e973d.firebaseapp.com",
   projectId: "seven-hills-dashboard-e973d",
@@ -159,16 +181,20 @@ const db = firebase.firestore();
 
 async function autoSaveRecoveryPlan(){
 
-    const rows = document.querySelectorAll('#planTable tr');
+const rows = document.querySelectorAll('#planTable tr');
 
-    let data = [];
+let data = [];
 
-    rows.forEach((row,index)=>{
+rows.forEach((row,index)=>{
 
-        if(index === 0) return;
+if(index === 0) return;
 
-        const cells = row.querySelectorAll('td');
+const cells = row.querySelectorAll('td');
 
+        data.push({
+            date: cells[0].innerHTML,
+            plan: cells[1].innerHTML
+        });
         if(cells.length >= 2){
 
             data.push({
@@ -176,64 +202,66 @@ async function autoSaveRecoveryPlan(){
                 plan: cells[1].innerHTML
             });
         }
-    });
+});
 
-    await db.collection("dashboard")
-        .doc("recoveryPlan")
-        .set({
-            data:data
-        });
+await db.collection("dashboard")
+.doc("recoveryPlan")
+.set({
+data:data
+});
 }
 
 function attachAutoSave(){
 
-    const editableCells =
-        document.querySelectorAll('#planTable td');
+const editableCells =
+document.querySelectorAll('#planTable td');
 
-    editableCells.forEach(cell=>{
+editableCells.forEach(cell=>{
 
-        cell.addEventListener('input', ()=>{
+cell.addEventListener('input', ()=>{
 
-            autoSaveRecoveryPlan();
-        });
-    });
+autoSaveRecoveryPlan();
+});
+});
 }
 
 async function loadRecoveryPlan(){
 
-    const snapshot = await db.collection("dashboard")
-        .doc("recoveryPlan")
-        .get();
+const snapshot = await db.collection("dashboard")
+.doc("recoveryPlan")
+.get();
 
-    if(snapshot.exists){
+if(snapshot.exists){
 
-        const saved = snapshot.data().data;
+const saved = snapshot.data().data;
 
-        const rows =
-            document.querySelectorAll('#planTable tr');
+const rows =
+document.querySelectorAll('#planTable tr');
 
-        saved.forEach((item,index)=>{
+saved.forEach((item,index)=>{
 
-            if(index + 1 >= rows.length) return;
+if(index + 1 >= rows.length) return;
 
-            rows[index+1].cells[0].innerHTML =
-                item.date;
+rows[index+1].cells[0].innerHTML =
+item.date;
 
-            rows[index+1].cells[1].innerHTML =
-                item.plan;
-        });
-    }
-
-    attachAutoSave();
+rows[index+1].cells[1].innerHTML =
+item.plan;
+});
 }
 
+attachAutoSave();
+}
+
+window.onload = function(){
 window.addEventListener('load', function(){
 
-    loadRecoveryPlan();
+loadRecoveryPlan();
+}
 });
 
 </script>
-    
+
 </head>
     
 <body>
@@ -772,136 +800,296 @@ window.addEventListener('load', function(){
 <th>Delete</th>
 </tr>
 <tr>
-    <td>14 Foldable Tables</td>
-    <td><input type="checkbox"></td>
-    <td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
-    </tr><tr>
-    <td>Laptop</td>
-    <td><input type="checkbox"></td>
-    <td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
-    </tr><tr>
-    <td>Laptop Charger</td>
-    <td><input type="checkbox"></td>
-    <td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
-    </tr><tr>
-    <td>2 Scanners</td>
-    <td><input type="checkbox"></td>
-    <td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
-    </tr><tr>
-    <td>Hotspot Dongle</td>
-    <td><input type="checkbox"></td>
-    <td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
-    </tr><tr>
-    <td>Mobile Desk</td>
-    <td><input type="checkbox"></td>
-    <td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
-    </tr><tr>
-    <td>Black Trolley for Second Scanner Station</td>
-    <td><input type="checkbox"></td>
-    <td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
-    </tr><tr>
-    <td>3 Extension Cords</td>
-    <td><input type="checkbox"></td>
-    <td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
-    </tr><tr>
-    <td>Power Board</td>
-    <td><input type="checkbox"></td>
-    <td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
-    </tr><tr>
-    <td>Pallet Jack</td>
-    <td><input type="checkbox"></td>
-    <td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
-    </tr><tr>
-    <td>2 boxes of clear wrap</td>
-    <td><input type="checkbox"></td>
-    <td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
-    </tr><tr>
-    <td>1 box of black wrap</td>
-    <td><input type="checkbox"></td>
-    <td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
-    </tr><tr>
-    <td>box of tape</td>
-    <td><input type="checkbox"></td>
-    <td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
-    </tr><tr>
-    <td>tape gun</td>
-    <td><input type="checkbox"></td>
-    <td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
-    </tr><tr>
-    <td>box of zebra rolls</td>
-    <td><input type="checkbox"></td>
-    <td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
-    </tr><tr>
-    <td>box of markers</td>
-    <td><input type="checkbox"></td>
-    <td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
-    </tr></tbody></table>
+<td>14 Foldable Tables</td>
+<td><input type="checkbox"></td>
+<td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
+</tr><tr>
+<td>Laptop</td>
+<td><input type="checkbox"></td>
+<td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
+</tr><tr>
+<td>Laptop Charger</td>
+<td><input type="checkbox"></td>
+<td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
+</tr><tr>
+<td>2 Scanners</td>
+<td><input type="checkbox"></td>
+<td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
+</tr><tr>
+<td>Hotspot Dongle</td>
+<td><input type="checkbox"></td>
+<td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
+</tr><tr>
+<td>Mobile Desk</td>
+<td><input type="checkbox"></td>
+<td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
+</tr><tr>
+<td>Black Trolley for Second Scanner Station</td>
+<td><input type="checkbox"></td>
+<td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
+</tr><tr>
+<td>3 Extension Cords</td>
+<td><input type="checkbox"></td>
+<td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
+</tr><tr>
+<td>Power Board</td>
+<td><input type="checkbox"></td>
+<td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
+</tr><tr>
+<td>Pallet Jack</td>
+<td><input type="checkbox"></td>
+<td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
+</tr><tr>
+<td>2 boxes of clear wrap</td>
+<td><input type="checkbox"></td>
+<td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
+</tr><tr>
+<td>1 box of black wrap</td>
+<td><input type="checkbox"></td>
+<td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
+</tr><tr>
+<td>box of tape</td>
+<td><input type="checkbox"></td>
+<td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
+</tr><tr>
+<td>tape gun</td>
+<td><input type="checkbox"></td>
+<td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
+</tr><tr>
+<td>box of zebra rolls</td>
+<td><input type="checkbox"></td>
+<td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
+</tr><tr>
+<td>box of markers</td>
+<td><input type="checkbox"></td>
+<td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
+</tr></tbody></table>
 </div>
 
 </div>
 
 <script>
 
-<script>
+let TOTAL_PALLETS = 103;
+let TOTAL_BOXES = 3000;
+let UNITS_TRANSIT = 0;
 
-            labourTotal += Number(item.hours);
-        });
+let receipted = 0;
+let receiptedBoxes = 0;
+let rough = 0;
+let finishedStyles = 0;
+let labourTotal = 0;
 
-        refreshMetrics();
-    }
+function showSection(id){
+
+document.querySelectorAll('.section').forEach(section => {
+section.classList.remove('active');
+});
+
+document.getElementById(id).classList.add('active');
 }
 
-// =========================
-// DASHBOARD TOTALS
-// =========================
+function toggleMenu(){
 
-async function saveDashboard(){
+const sidebar = document.getElementById('sidebar');
+const main = document.getElementById('main');
 
-    await db.collection("dashboard")
-        .doc("totals")
-        .set({
-            pallets: TOTAL_PALLETS,
-            boxes: TOTAL_BOXES,
-            transit: UNITS_TRANSIT
-        });
+sidebar.classList.toggle('hidden');
+main.classList.toggle('full');
 }
 
-async function loadDashboard(){
+function updateTotals(){
 
-    const snapshot = await db.collection("dashboard")
-        .doc("totals")
-        .get();
+TOTAL_PALLETS = Number(document.getElementById('totalPalletsInput').value || TOTAL_PALLETS);
+TOTAL_BOXES = Number(document.getElementById('totalBoxesInput').value || TOTAL_BOXES);
+UNITS_TRANSIT = Number(document.getElementById('transitUnitsInput').value || UNITS_TRANSIT);
 
-    if(snapshot.exists){
+document.getElementById('totalPallets').innerText = TOTAL_PALLETS;
+document.getElementById('totalBoxes').innerText = TOTAL_BOXES;
+document.getElementById('unitsTransit').innerText = UNITS_TRANSIT;
 
-        const data = snapshot.data();
-
-        TOTAL_PALLETS = data.pallets;
-        TOTAL_BOXES = data.boxes;
-        UNITS_TRANSIT = data.transit;
-
-        document.getElementById('totalPallets').innerText = TOTAL_PALLETS;
-        document.getElementById('totalBoxes').innerText = TOTAL_BOXES;
-        document.getElementById('unitsTransit').innerText = UNITS_TRANSIT;
-
-        refreshMetrics();
-    }
+refreshMetrics();
 }
 
-// =========================
-// STARTUP
-// =========================
+function refreshMetrics(){
 
-window.onload = async function(){
+document.getElementById('receipted').innerText = receipted;
+document.getElementById('receiptedBoxes').innerText = receiptedBoxes;
+document.getElementById('rough').innerText = rough;
+document.getElementById('finishedStyles').innerText = finishedStyles;
+document.getElementById('labourTotal').innerText = labourTotal;
 
-    await loadRecoveryPlan();
-    await loadReceipting();
-    await loadSorting();
-    await loadLabour();
-    await loadDashboard();
+document.getElementById('receiptedPercent').innerText =
+((receipted / TOTAL_PALLETS) * 100).toFixed(1) + '%';
+
+document.getElementById('boxPercent').innerText =
+((receiptedBoxes / TOTAL_BOXES) * 100).toFixed(1) + '%';
+
+document.getElementById('roughPercent').innerText =
+((rough / TOTAL_PALLETS) * 100).toFixed(1) + '%';
+
+let palletsPerHour = labourTotal > 0 ? (receipted / labourTotal).toFixed(2) : 0;
+let boxesPerHour = labourTotal > 0 ? (receiptedBoxes / labourTotal).toFixed(2) : 0;
+
+document.getElementById('palletsPerHour').innerText = palletsPerHour;
+document.getElementById('boxesPerHour').innerText = boxesPerHour;
+
+let remainingBoxes = TOTAL_BOXES - receiptedBoxes;
+
+let estimatedDays = boxesPerHour > 0
+? (remainingBoxes / (boxesPerHour * 8)).toFixed(1)
+: 0;
+
+document.getElementById('daysRemaining').innerText = estimatedDays;
 }
 
-</script>
+function deleteRow(button){
+button.closest('tr').remove();
+}
+
+function updateReceipts(){
+
+const date = document.getElementById('receiptDate').value;
+const pallets = Number(document.getElementById('receiptInput').value || 0);
+const boxes = Number(document.getElementById('boxInput').value || 0);
+
+receipted += pallets;
+receiptedBoxes += boxes;
+
+const row = document.getElementById('receiptingTable').insertRow();
+
+row.innerHTML = `
+   <td>${date}</td>
+   <td>${pallets}</td>
+   <td>${boxes}</td>
+   <td><button class="delete-btn" onclick="removeReceipt(this, ${pallets}, ${boxes})">Delete</button></td>
+   `;
+
+refreshMetrics();
+}
+
+function removeReceipt(button, pallets, boxes){
+receipted -= pallets;
+receiptedBoxes -= boxes;
+deleteRow(button);
+refreshMetrics();
+}
+
+function updateSorting(){
+
+const date = document.getElementById('sortingDate').value;
+const pallets = Number(document.getElementById('roughInput').value || 0);
+
+rough += pallets;
+
+const row = document.getElementById('sortingTable').insertRow();
+
+row.innerHTML = `
+   <td>${date}</td>
+   <td>${pallets}</td>
+   <td><button class="delete-btn" onclick="removeSorting(this, ${pallets})">Delete</button></td>
+   `;
+
+refreshMetrics();
+}
+
+function removeSorting(button, pallets){
+rough -= pallets;
+deleteRow(button);
+refreshMetrics();
+}
+
+function addStyle(){
+
+const style = document.getElementById('styleName').value;
+const boxes = document.getElementById('styleBoxes').value;
+
+finishedStyles++;
+
+const row = document.getElementById('styleTable').insertRow();
+
+row.innerHTML = `
+   <td>${style}</td>
+   <td>${boxes}</td>
+   <td><button class="delete-btn" onclick="removeStyle(this)">Delete</button></td>
+   `;
+
+refreshMetrics();
+}
+
+function removeStyle(button){
+finishedStyles--;
+deleteRow(button);
+refreshMetrics();
+}
+
+function addLabour(){
+
+const date = document.getElementById('labourDate').value;
+const staff = document.getElementById('staffName').value;
+const hours = Number(document.getElementById('hoursWorked').value || 0);
+
+labourTotal += hours;
+
+const row = document.getElementById('labourTable').insertRow();
+
+row.innerHTML = `
+   <td>${date}</td>
+   <td>${staff}</td>
+   <td>${hours}</td>
+   <td><button class="delete-btn" onclick="removeLabour(this, ${hours})">Delete</button></td>
+   `;
+
+refreshMetrics();
+}
+
+function removeLabour(button, hours){
+labourTotal -= hours;
+deleteRow(button);
+refreshMetrics();
+}
+
+const defaultSupplies = [
+'14 Foldable Tables',
+'Laptop',
+'Laptop Charger',
+'2 Scanners',
+'Hotspot Dongle',
+'Mobile Desk',
+'Black Trolley for Second Scanner Station',
+'3 Extension Cords',
+'Power Board',
+'Pallet Jack'
+];
+
+function addSupply(){
+
+const item = document.getElementById('supplyInput').value;
+
+if(item === '') return;
+
+addSupplyRow(item);
+
+document.getElementById('supplyInput').value = '';
+}
+
+function addSupplyRow(item){
+
+const row = document.getElementById('suppliesTable').insertRow();
+
+row.innerHTML = `
+   <td>${item}</td>
+   <td><input type="checkbox"></td>
+   <td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
+   `;
+}
+
+window.onload = function(){
+
+defaultSupplies.forEach(item => {
+addSupplyRow(item);
+});
+}
 
 </script>
 
