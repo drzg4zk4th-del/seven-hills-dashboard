@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Seven Hills Recovery Dashboard</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#0b1220;
+    color:white;
+}
+
+.sidebar{
+    position:fixed;
+    top:0;
+    left:0;
+    width:250px;
+    height:100vh;
+    background:#111827;
+    padding:20px;
+    box-sizing:border-box;
+    overflow-y:auto;
+}
+
+.sidebar.hidden{
+    display:none;
+}
+
+.sidebar h1{
+    font-size:22px;
+    margin-top:0;
+}
+
+.sidebar button{
+    width:100%;
+    padding:12px;
+    margin-bottom:10px;
+    border:none;
+    border-radius:8px;
+    background:#1f2937;
+    color:white;
+    cursor:pointer;
+    text-align:left;
+}
+
+.sidebar button:hover{
+    background:#2563eb;
+}
+
+.main{
+    margin-left:270px;
+    padding:20px;
+}
+
+.main.full{
+    margin-left:20px;
+}
+
+.section{
+    display:none;
+}
+
+.section.active{
+    display:block;
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:20px;
+}
+
+.card{
+    background:#1f2937;
+    padding:20px;
+    border-radius:12px;
+}
+
+.big-number{
+    font-size:34px;
+    font-weight:bold;
+}
+
+.small-text{
+    color:#9ca3af;
+    margin-top:8px;
+}
+
+input, textarea{
+    width:100%;
+    padding:10px;
+    margin-top:10px;
+    border:none;
+    border-radius:8px;
+    background:#374151;
+    color:white;
+    box-sizing:border-box;
+}
+
+.action{
+    margin-top:10px;
+    padding:10px 16px;
+    border:none;
+    border-radius:8px;
+    background:#2563eb;
+    color:white;
+    cursor:pointer;
+}
+
+.delete-btn{
+    background:#dc2626;
+    border:none;
+    padding:6px 10px;
+    border-radius:6px;
+    color:white;
+    cursor:pointer;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:15px;
+}
+
+th,td{
+    border:1px solid #374151;
+    padding:10px;
+    vertical-align:top;
+}
+
+#menuToggle{
+    position:fixed;
+    top:10px;
+    right:10px;
+    z-index:9999;
+}
+</style>
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+    apiKey: "AIzaSyD9nPDHQpkPgxeQYfe-JVWemQg6CjbCBYM",
+    authDomain: "seven-hills-dashboard-e973d.firebaseapp.com",
+    projectId: "seven-hills-dashboard-e973d",
+    storageBucket: "seven-hills-dashboard-e973d.firebasestorage.app",
+    messagingSenderId: "1016653351453",
+    appId: "1:1016653351453:web:a2a1f597844adf51ba54f4"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+async function saveRecoveryPlan(button){
+
+    const rows = document.querySelectorAll('#planTable tr');
+
+    let data = [];
+
+    rows.forEach((row,index)=>{
+
+        if(index === 0) return;
+
+        const cells = row.querySelectorAll('td');
+
+        data.push({
+            date: cells[0].innerHTML,
+            plan: cells[1].innerHTML
+        });
+    });
+
+    try{
+
+        await db.collection("dashboard")
+            .doc("recoveryPlan")
+            .set({
+                data:data
+            });
+
+        button.innerText = "Saved";
+
+        setTimeout(()=>{
+            button.innerText = "Save";
+        },1500);
+
+    } catch(error){
+
+        console.error(error);
+        alert("Save failed");
+    }
+}
+
+async function loadRecoveryPlan(){
+
+    try{
+
+        const snapshot = await db.collection("dashboard")
+            .doc("recoveryPlan")
+            .get();
+
+        if(snapshot.exists){
+
+            const saved = snapshot.data().data;
+
+            const rows = document.querySelectorAll('#planTable tr');
+
+            saved.forEach((item,index)=>{
+
+                if(index + 1 >= rows.length) return;
+
+                rows[index+1].cells[0].innerHTML = item.date;
+                rows[index+1].cells[1].innerHTML = item.plan;
+            });
+        }
+
+    } catch(error){
+
+        console.error(error);
+    }
+}
+
+window.addEventListener('load', function(){
+    loadRecoveryPlan();
+});
+</script>
+</head>
+
+<body>
+
+<h1 style="padding:20px;">Seven Hills Recovery Dashboard</h1>
+
+<p style="padding:20px;">
+Your Firebase is now connected correctly.
+</p>
+
+<div style="padding:20px;">
+
+<table id="planTable">
+<tr>
+<th>Date</th>
+<th>Plan</th>
+<th>Save</th>
+</tr>
+
+<tr>
+<td contenteditable="true">Monday</td>
+<td contenteditable="true">Example recovery task</td>
+<td><button class="action" onclick="saveRecoveryPlan(this)">Save</button></td>
+</tr>
+
+</table>
+
+</div>
+
+</body>
+</html>
