@@ -204,6 +204,11 @@ z-index:9999;
 </div>
 
 <div class="card">
+<h2>Receipted Units</h2>
+<div class="big-number" id="receiptedUnits">0</div>
+</div>
+
+<div class="card">
 <h2>Rough Sorted</h2>
 <div class="big-number" id="rough">0</div>
 <div class="small-text" id="roughPercent">0%</div>
@@ -768,6 +773,7 @@ let UNITS_TRANSIT = 0;
 
 let receipted = 0;
 let receiptedBoxes = 0;
+let receiptedUnits = 0;
 let rough = 0;
 let finishedStyles = 0;
 let labourTotal = 0;
@@ -792,6 +798,7 @@ function refreshMetrics(){
 // RESET TOTALS
 receipted = 0;
 receiptedBoxes = 0;
+receiptedUnits = 0;
 rough = 0;
 finishedStyles = 0;
 labourTotal = 0;
@@ -805,6 +812,7 @@ const cells = row.querySelectorAll('td');
 
 receipted += Number(cells[1].innerText || 0);
 receiptedBoxes += Number(cells[2].innerText || 0);
+receiptedUnits = Number(cells[3].innerText || 0);
 
 });
 
@@ -846,6 +854,7 @@ document.getElementById('unitsTransit').innerText = UNITS_TRANSIT;
 
 document.getElementById('receipted').innerText = receipted;
 document.getElementById('receiptedBoxes').innerText = receiptedBoxes;
+document.getElementById('receiptedUnits').innerText = receiptedUnits;
 document.getElementById('rough').innerText = rough;
 document.getElementById('finishedStyles').innerText = finishedStyles;
 document.getElementById('labourTotal').innerText = labourTotal;
@@ -892,6 +901,7 @@ TOTAL_BOXES,
 UNITS_TRANSIT,
 receipted,
 receiptedBoxes,
+receiptedUnits,
 rough,
 finishedStyles,
 labourTotal,
@@ -997,6 +1007,7 @@ UNITS_TRANSIT = data.UNITS_TRANSIT || 0;
 
 receipted = data.receipted || 0;
 receiptedBoxes = data.receiptedBoxes || 0;
+receiptedUnits = data.receiptedUnits || 0;
 rough = data.rough || 0;
 finishedStyles = data.finishedStyles || 0;
 labourTotal = data.labourTotal || 0;
