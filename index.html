@@ -842,290 +842,66 @@ window.addEventListener('load', function(){
 
 <script>
 
-let TOTAL_PALLETS = 103;
-let TOTAL_BOXES = 3000;
-let UNITS_TRANSIT = 0;
+<script>
 
-let receipted = 0;
-let receiptedBoxes = 0;
-let rough = 0;
-let finishedStyles = 0;
-let labourTotal = 0;
-
-function showSection(id){
-
-    document.querySelectorAll('.section').forEach(section => {
-        section.classList.remove('active');
-    });
-
-    document.getElementById(id).classList.add('active');
-}
-
-function toggleMenu(){
-
-    const sidebar = document.getElementById('sidebar');
-    const main = document.getElementById('main');
-
-    sidebar.classList.toggle('hidden');
-    main.classList.toggle('full');
-}
-
-function updateTotals(){
-
-    TOTAL_PALLETS = Number(document.getElementById('totalPalletsInput').value || TOTAL_PALLETS);
-    TOTAL_BOXES = Number(document.getElementById('totalBoxesInput').value || TOTAL_BOXES);
-    UNITS_TRANSIT = Number(document.getElementById('transitUnitsInput').value || UNITS_TRANSIT);
-
-    document.getElementById('totalPallets').innerText = TOTAL_PALLETS;
-    document.getElementById('totalBoxes').innerText = TOTAL_BOXES;
-    document.getElementById('unitsTransit').innerText = UNITS_TRANSIT;
-
-    refreshMetrics();
-}
-
-function refreshMetrics(){
-
-    document.getElementById('receipted').innerText = receipted;
-    document.getElementById('receiptedBoxes').innerText = receiptedBoxes;
-    document.getElementById('rough').innerText = rough;
-    document.getElementById('finishedStyles').innerText = finishedStyles;
-    document.getElementById('labourTotal').innerText = labourTotal;
-
-    document.getElementById('receiptedPercent').innerText =
-        ((receipted / TOTAL_PALLETS) * 100).toFixed(1) + '%';
-
-    document.getElementById('boxPercent').innerText =
-        ((receiptedBoxes / TOTAL_BOXES) * 100).toFixed(1) + '%';
-
-    document.getElementById('roughPercent').innerText =
-        ((rough / TOTAL_PALLETS) * 100).toFixed(1) + '%';
-
-    let palletsPerHour = labourTotal > 0 ? (receipted / labourTotal).toFixed(2) : 0;
-    let boxesPerHour = labourTotal > 0 ? (receiptedBoxes / labourTotal).toFixed(2) : 0;
-
-    document.getElementById('palletsPerHour').innerText = palletsPerHour;
-    document.getElementById('boxesPerHour').innerText = boxesPerHour;
-
-    let remainingBoxes = TOTAL_BOXES - receiptedBoxes;
-
-    let estimatedDays = boxesPerHour > 0
-        ? (remainingBoxes / (boxesPerHour * 8)).toFixed(1)
-        : 0;
-
-    document.getElementById('daysRemaining').innerText = estimatedDays;
-}
-
-function deleteRow(button){
-    button.closest('tr').remove();
-}
-
-function updateReceipts(){
-
-    async function saveReceipting(){
-
-    const rows =
-        document.querySelectorAll('#receiptingTable tr');
-
-    let data = [];
-
-    rows.forEach((row,index)=>{
-
-        if(index === 0) return;
-
-        const cells = row.querySelectorAll('td');
-
-        data.push({
-            date: cells[0].innerHTML,
-            pallets: cells[1].innerHTML,
-            boxes: cells[2].innerHTML
-        });
-    });
-
-    await db.collection("dashboard")
-        .doc("receipting")
-        .set({
-            data:data
-        });
-}
-
-    const date = document.getElementById('receiptDate').value;
-    const pallets = Number(document.getElementById('receiptInput').value || 0);
-    const boxes = Number(document.getElementById('boxInput').value || 0);
-
-    receipted += pallets;
-    receiptedBoxes += boxes;
-
-    const row = document.getElementById('receiptingTable').insertRow();
-
-    row.innerHTML = `
-    <td>${date}</td>
-    <td>${pallets}</td>
-    <td>${boxes}</td>
-    <td><button class="delete-btn" onclick="removeReceipt(this, ${pallets}, ${boxes})">Delete</button></td>
-    `;
-
-    refreshMetrics();
-
-    async function loadReceipting(){
-
-    const snapshot = await db.collection("dashboard")
-        .doc("receipting")
-        .get();
-
-    if(snapshot.exists){
-
-        const saved = snapshot.data().data;
-
-        saved.forEach(item=>{
-
-            const row =
-                document.getElementById('receiptingTable')
-                .insertRow();
-
-            row.innerHTML = `
-            <td>${item.date}</td>
-            <td>${item.pallets}</td>
-            <td>${item.boxes}</td>
-            <td></td>
-            `;
-
-            receipted += Number(item.pallets);
-            receiptedBoxes += Number(item.boxes);
+            labourTotal += Number(item.hours);
         });
 
         refreshMetrics();
     }
 }
+
+// =========================
+// DASHBOARD TOTALS
+// =========================
+
+async function saveDashboard(){
+
+    await db.collection("dashboard")
+        .doc("totals")
+        .set({
+            pallets: TOTAL_PALLETS,
+            boxes: TOTAL_BOXES,
+            transit: UNITS_TRANSIT
+        });
 }
 
-function removeReceipt(button, pallets, boxes){
-    receipted -= pallets;
-    receiptedBoxes -= boxes;
-    deleteRow(button);
-    refreshMetrics();
+async function loadDashboard(){
 
-    saveReceipting();
+    const snapshot = await db.collection("dashboard")
+        .doc("totals")
+        .get();
+
+    if(snapshot.exists){
+
+        const data = snapshot.data();
+
+        TOTAL_PALLETS = data.pallets;
+        TOTAL_BOXES = data.boxes;
+        UNITS_TRANSIT = data.transit;
+
+        document.getElementById('totalPallets').innerText = TOTAL_PALLETS;
+        document.getElementById('totalBoxes').innerText = TOTAL_BOXES;
+        document.getElementById('unitsTransit').innerText = UNITS_TRANSIT;
+
+        refreshMetrics();
+    }
 }
 
-function updateSorting(){
+// =========================
+// STARTUP
+// =========================
 
-    const date = document.getElementById('sortingDate').value;
-    const pallets = Number(document.getElementById('roughInput').value || 0);
+window.onload = async function(){
 
-    rough += pallets;
-
-    const row = document.getElementById('sortingTable').insertRow();
-
-    row.innerHTML = `
-    <td>${date}</td>
-    <td>${pallets}</td>
-    <td><button class="delete-btn" onclick="removeSorting(this, ${pallets})">Delete</button></td>
-    `;
-
-    refreshMetrics();
+    await loadRecoveryPlan();
+    await loadReceipting();
+    await loadSorting();
+    await loadLabour();
+    await loadDashboard();
 }
 
-function removeSorting(button, pallets){
-    rough -= pallets;
-    deleteRow(button);
-    refreshMetrics();
-}
-
-function addStyle(){
-
-    const style = document.getElementById('styleName').value;
-    const boxes = document.getElementById('styleBoxes').value;
-
-    finishedStyles++;
-
-    const row = document.getElementById('styleTable').insertRow();
-
-    row.innerHTML = `
-    <td>${style}</td>
-    <td>${boxes}</td>
-    <td><button class="delete-btn" onclick="removeStyle(this)">Delete</button></td>
-    `;
-
-    refreshMetrics();
-}
-
-function removeStyle(button){
-    finishedStyles--;
-    deleteRow(button);
-    refreshMetrics();
-}
-
-function addLabour(){
-
-    const date = document.getElementById('labourDate').value;
-    const staff = document.getElementById('staffName').value;
-    const hours = Number(document.getElementById('hoursWorked').value || 0);
-
-    labourTotal += hours;
-
-    const row = document.getElementById('labourTable').insertRow();
-
-    row.innerHTML = `
-    <td>${date}</td>
-    <td>${staff}</td>
-    <td>${hours}</td>
-    <td><button class="delete-btn" onclick="removeLabour(this, ${hours})">Delete</button></td>
-    `;
-
-    refreshMetrics();
-}
-
-function removeLabour(button, hours){
-    labourTotal -= hours;
-    deleteRow(button);
-    refreshMetrics();
-}
-
-const defaultSupplies = [
-'14 Foldable Tables',
-'Laptop',
-'Laptop Charger',
-'2 Scanners',
-'Hotspot Dongle',
-'Mobile Desk',
-'Black Trolley for Second Scanner Station',
-'3 Extension Cords',
-'Power Board',
-'Pallet Jack'
-];
-
-function addSupply(){
-
-    const item = document.getElementById('supplyInput').value;
-
-    if(item === '') return;
-
-    addSupplyRow(item);
-
-    document.getElementById('supplyInput').value = '';
-}
-
-function addSupplyRow(item){
-
-    const row = document.getElementById('suppliesTable').insertRow();
-
-    row.innerHTML = `
-    <td>${item}</td>
-    <td><input type="checkbox"></td>
-    <td><button class="delete-btn" onclick="deleteRow(this)">Delete</button></td>
-    `;
-}
-
-window.onload = function(){
-
-    defaultSupplies.forEach(item => {
-        addSupplyRow(item);
-    });
-
-     loadRecoveryPlan();
-
-    loadReceipting();
-}
+</script>
 
 </script>
 
