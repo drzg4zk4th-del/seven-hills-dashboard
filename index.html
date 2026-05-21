@@ -138,35 +138,19 @@ th,td{
 }
 </style>
 
-</script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-    
-</head>
 
 <script>
 
 const firebaseConfig = {
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyD9nPDHQpkPgxeQYfe-JVWemQg6CjbCBYM",
-    authDomain: "seven-hills-dashboard-e973d.firebaseapp.com",
-    projectId: "seven-hills-dashboard-e973d",
-    storageBucket: "seven-hills-dashboard-e973d.firebasestorage.app",
-    messagingSenderId: "1016653351453",
-    appId: "1:1016653351453:web:a2a1f597844adf51ba54f4"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-</script>
+  apiKey: "AIzaSyD9nPDHQpkPgxeQYfe-JVWemQg6CjbCBYM",
+  authDomain: "seven-hills-dashboard-e973d.firebaseapp.com",
+  projectId: "seven-hills-dashboard-e973d",
+  storageBucket: "seven-hills-dashboard-e973d.firebasestorage.app",
+  messagingSenderId: "1016653351453",
+  appId: "1:1016653351453:web:a2a1f597844adf51ba54f4"
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -185,10 +169,13 @@ async function autoSaveRecoveryPlan(){
 
         const cells = row.querySelectorAll('td');
 
-        data.push({
-            date: cells[0].innerHTML,
-            plan: cells[1].innerHTML
-        });
+        if(cells.length >= 2){
+
+            data.push({
+                date: cells[0].innerHTML,
+                plan: cells[1].innerHTML
+            });
+        }
     });
 
     await db.collection("dashboard")
@@ -240,12 +227,14 @@ async function loadRecoveryPlan(){
     attachAutoSave();
 }
 
-window.onload = function(){
+window.addEventListener('load', function(){
 
     loadRecoveryPlan();
-}
+});
 
 </script>
+    
+</head>
     
 <body>
 
