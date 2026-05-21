@@ -243,6 +243,7 @@ z-index:9999;
 <input type="date" id="receiptDate">
 <input type="number" id="receiptInput" placeholder="Receipted pallets">
 <input type="number" id="boxInput" placeholder="Receipted boxes">
+<input type="number" id="unitsInput" placeholder="Receipted units">
 
 <button class="action" onclick="updateReceipts()">Add Entry</button>
 
@@ -251,6 +252,7 @@ z-index:9999;
 <th>Date</th>
 <th>Pallets</th>
 <th>Boxes</th>
+<th>Total Units</th>
 <th>Delete</th>
 </tr>
 </table>
@@ -912,7 +914,8 @@ const cells=row.querySelectorAll('td');
 data.receipting.push({
 date:cells[0].innerText,
 pallets:cells[1].innerText,
-boxes:cells[2].innerText
+boxes:cells[2].innerText,
+units:cells[3].innerText
 });
 });
 
@@ -1006,6 +1009,7 @@ row.innerHTML=`
 <td>${item.date}</td>
 <td>${item.pallets}</td>
 <td>${item.boxes}</td>
+<td>${item.units || 0}</td>
 <td><button class="delete-btn" onclick="this.closest('tr').remove();refreshMetrics();saveAll();">Delete</button></td>
 `;
 });
@@ -1082,24 +1086,39 @@ saveAll();
 
 function updateReceipts(){
 
-const date=document.getElementById('receiptDate').value;
-const pallets=Number(document.getElementById('receiptInput').value||0);
-const boxes=Number(document.getElementById('boxInput').value||0);
+const date = document.getElementById('receiptDate').value;
+const pallets = Number(document.getElementById('receiptInput').value || 0);
+const boxes = Number(document.getElementById('boxInput').value || 0);
+const unitsAdded = Number(document.getElementById('unitsInput').value || 0);
 
-receipted+=pallets;
-receiptedBoxes+=boxes;
+// FIND LAST TOTAL
+let runningUnits = 0;
 
-const row=document.getElementById('receiptingTable').insertRow();
+const rows = document.querySelectorAll('#receiptingTable tr');
 
-row.innerHTML=`
+if(rows.length > 1){
+
+const lastRow = rows[rows.length - 1];
+runningUnits = Number(lastRow.cells[3].innerText || 0);
+
+}
+
+// ADD NEW UNITS
+runningUnits += unitsAdded;
+
+const row = document.getElementById('receiptingTable').insertRow();
+
+row.innerHTML = `
 <td>${date}</td>
 <td>${pallets}</td>
 <td>${boxes}</td>
+<td>${runningUnits}</td>
 <td><button class="delete-btn" onclick="this.closest('tr').remove();refreshMetrics();saveAll();">Delete</button></td>
 `;
 
 refreshMetrics();
 saveAll();
+
 }
 
 function updateSorting(){
