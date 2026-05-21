@@ -787,6 +787,57 @@ document.getElementById('main').classList.toggle('full');
 
 function refreshMetrics(){
 
+// RESET TOTALS
+receipted = 0;
+receiptedBoxes = 0;
+rough = 0;
+finishedStyles = 0;
+labourTotal = 0;
+
+// RECEIPTING TOTALS
+document.querySelectorAll('#receiptingTable tr').forEach((row,index)=>{
+
+if(index===0)return;
+
+const cells = row.querySelectorAll('td');
+
+receipted += Number(cells[1].innerText || 0);
+receiptedBoxes += Number(cells[2].innerText || 0);
+
+});
+
+// SORTING TOTALS
+document.querySelectorAll('#sortingTable tr').forEach((row,index)=>{
+
+if(index===0)return;
+
+const cells = row.querySelectorAll('td');
+
+rough += Number(cells[1].innerText || 0);
+
+});
+
+// STYLE TOTALS
+document.querySelectorAll('#styleTable tr').forEach((row,index)=>{
+
+if(index===0)return;
+
+finishedStyles++;
+
+});
+
+// LABOUR TOTALS
+document.querySelectorAll('#labourTable tr').forEach((row,index)=>{
+
+if(index===0)return;
+
+const cells = row.querySelectorAll('td');
+
+labourTotal += Number(cells[2].innerText || 0);
+
+});
+
+// UPDATE DASHBOARD
 document.getElementById('totalPallets').innerText = TOTAL_PALLETS;
 document.getElementById('totalBoxes').innerText = TOTAL_BOXES;
 document.getElementById('unitsTransit').innerText = UNITS_TRANSIT;
@@ -797,6 +848,7 @@ document.getElementById('rough').innerText = rough;
 document.getElementById('finishedStyles').innerText = finishedStyles;
 document.getElementById('labourTotal').innerText = labourTotal;
 
+// PERCENTAGES
 document.getElementById('receiptedPercent').innerText =
 ((receipted / TOTAL_PALLETS) * 100).toFixed(1) + '%';
 
@@ -806,12 +858,19 @@ document.getElementById('boxPercent').innerText =
 document.getElementById('roughPercent').innerText =
 ((rough / TOTAL_PALLETS) * 100).toFixed(1) + '%';
 
-let palletsPerHour = labourTotal > 0 ? (receipted / labourTotal).toFixed(2) : 0;
-let boxesPerHour = labourTotal > 0 ? (receiptedBoxes / labourTotal).toFixed(2) : 0;
+// SPEED METRICS
+let palletsPerHour = labourTotal > 0
+? (receipted / labourTotal).toFixed(2)
+: 0;
+
+let boxesPerHour = labourTotal > 0
+? (receiptedBoxes / labourTotal).toFixed(2)
+: 0;
 
 document.getElementById('palletsPerHour').innerText = palletsPerHour;
 document.getElementById('boxesPerHour').innerText = boxesPerHour;
 
+// DAYS REMAINING
 let remainingBoxes = TOTAL_BOXES - receiptedBoxes;
 
 let estimatedDays = boxesPerHour > 0
@@ -819,6 +878,7 @@ let estimatedDays = boxesPerHour > 0
 : 0;
 
 document.getElementById('daysRemaining').innerText = estimatedDays;
+
 }
 
 async function saveAll(){
@@ -946,7 +1006,7 @@ row.innerHTML=`
 <td>${item.date}</td>
 <td>${item.pallets}</td>
 <td>${item.boxes}</td>
-<td><button class="delete-btn" onclick="this.closest('tr').remove();saveAll();">Delete</button></td>
+<td><button class="delete-btn" onclick="this.closest('tr').remove();refreshMetrics();saveAll();">Delete</button></td>
 `;
 });
 
@@ -957,7 +1017,7 @@ const row=document.getElementById('sortingTable').insertRow();
 row.innerHTML=`
 <td>${item.date}</td>
 <td>${item.pallets}</td>
-<td><button class="delete-btn" onclick="this.closest('tr').remove();saveAll();">Delete</button></td>
+<td><button class="delete-btn" onclick="this.closest('tr').remove();refreshMetrics();saveAll();">Delete</button></td>
 `;
 });
 
@@ -968,7 +1028,7 @@ const row=document.getElementById('styleTable').insertRow();
 row.innerHTML=`
 <td>${item.style}</td>
 <td>${item.boxes}</td>
-<td><button class="delete-btn" onclick="this.closest('tr').remove();saveAll();">Delete</button></td>
+<td><button class="delete-btn" onclick="this.closest('tr').remove();refreshMetrics();saveAll();">Delete</button></td>
 `;
 });
 
@@ -980,7 +1040,7 @@ row.innerHTML=`
 <td>${item.date}</td>
 <td>${item.staff}</td>
 <td>${item.hours}</td>
-<td><button class="delete-btn" onclick="this.closest('tr').remove();saveAll();">Delete</button></td>
+<td><button class="delete-btn" onclick="this.closest('tr').remove();refreshMetrics();saveAll();">Delete</button></td>
 `;
 });
 
@@ -991,7 +1051,7 @@ const row=document.getElementById('suppliesTable').insertRow();
 row.innerHTML=`
 <td>${item.item}</td>
 <td><input type="checkbox" ${item.checked ? 'checked' : ''}></td>
-<td><button class="delete-btn" onclick="this.closest('tr').remove();saveAll();">Delete</button></td>
+<td><button class="delete-btn" onclick="this.closest('tr').remove();refreshMetrics();saveAll();">Delete</button></td>
 `;
 
 row.querySelector('input').addEventListener('change',saveAll);
@@ -1035,7 +1095,7 @@ row.innerHTML=`
 <td>${date}</td>
 <td>${pallets}</td>
 <td>${boxes}</td>
-<td><button class="delete-btn" onclick="this.closest('tr').remove();saveAll();">Delete</button></td>
+<td><button class="delete-btn" onclick="this.closest('tr').remove();refreshMetrics();saveAll();">Delete</button></td>
 `;
 
 refreshMetrics();
@@ -1054,7 +1114,7 @@ const row=document.getElementById('sortingTable').insertRow();
 row.innerHTML=`
 <td>${date}</td>
 <td>${pallets}</td>
-<td><button class="delete-btn" onclick="this.closest('tr').remove();saveAll();">Delete</button></td>
+<td><button class="delete-btn" onclick="this.closest('tr').remove();refreshMetrics();saveAll();">Delete</button></td>
 `;
 
 refreshMetrics();
@@ -1073,7 +1133,7 @@ const row=document.getElementById('styleTable').insertRow();
 row.innerHTML=`
 <td>${style}</td>
 <td>${boxes}</td>
-<td><button class="delete-btn" onclick="this.closest('tr').remove();saveAll();">Delete</button></td>
+<td><button class="delete-btn" onclick="this.closest('tr').remove();refreshMetrics();saveAll();">Delete</button></td>
 `;
 
 refreshMetrics();
@@ -1094,7 +1154,7 @@ row.innerHTML=`
 <td>${date}</td>
 <td>${staff}</td>
 <td>${hours}</td>
-<td><button class="delete-btn" onclick="this.closest('tr').remove();saveAll();">Delete</button></td>
+<td><button class="delete-btn" onclick="this.closest('tr').remove();refreshMetrics();saveAll();">Delete</button></td>
 `;
 
 refreshMetrics();
@@ -1112,7 +1172,7 @@ const row=document.getElementById('suppliesTable').insertRow();
 row.innerHTML=`
 <td>${item}</td>
 <td><input type="checkbox"></td>
-<td><button class="delete-btn" onclick="this.closest('tr').remove();saveAll();">Delete</button></td>
+<td><button class="delete-btn" onclick="this.closest('tr').remove();refreshMetrics();saveAll();">Delete</button></td>
 `;
 
 row.querySelector('input').addEventListener('change',saveAll);
