@@ -138,41 +138,19 @@ z-index:9999;
 }
 </style>
 
-</script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-    
-</head>
 
 <script>
 
 const firebaseConfig = {
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyD9nPDHQpkPgxeQYfe-JVWemQg6CjbCBYM",
-    authDomain: "seven-hills-dashboard-e973d.firebaseapp.com",
-    projectId: "seven-hills-dashboard-e973d",
-    storageBucket: "seven-hills-dashboard-e973d.firebasestorage.app",
-    messagingSenderId: "1016653351453",
-    appId: "1:1016653351453:web:a2a1f597844adf51ba54f4"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-</script>
-  apiKey: "AIzaSyD9nPDHQpkPgxeQYfe-JVWemQg6CjbCBYM",
-  authDomain: "seven-hills-dashboard-e973d.firebaseapp.com",
-  projectId: "seven-hills-dashboard-e973d",
-  storageBucket: "seven-hills-dashboard-e973d.firebasestorage.app",
-  messagingSenderId: "1016653351453",
-  appId: "1:1016653351453:web:a2a1f597844adf51ba54f4"
+apiKey: "AIzaSyD9nPDHQpkPgxeQYfe-JVWemQg6CjbCBYM",
+authDomain: "seven-hills-dashboard-e973d.firebaseapp.com",
+projectId: "seven-hills-dashboard-e973d",
+storageBucket: "seven-hills-dashboard-e973d.firebasestorage.app",
+messagingSenderId: "1016653351453",
+appId: "1:1016653351453:web:a2a1f597844adf51ba54f4"
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -191,17 +169,13 @@ if(index === 0) return;
 
 const cells = row.querySelectorAll('td');
 
-        data.push({
-            date: cells[0].innerHTML,
-            plan: cells[1].innerHTML
-        });
-        if(cells.length >= 2){
+if(cells.length >= 2){
 
-            data.push({
-                date: cells[0].innerHTML,
-                plan: cells[1].innerHTML
-            });
-        }
+data.push({
+date: cells[0].innerHTML,
+plan: cells[1].innerHTML
+});
+}
 });
 
 await db.collection("dashboard")
@@ -253,17 +227,15 @@ item.plan;
 attachAutoSave();
 }
 
-window.onload = function(){
 window.addEventListener('load', function(){
 
 loadRecoveryPlan();
-}
 });
 
 </script>
 
 </head>
-    
+
 <body>
 
 <button id="menuToggle" class="action" onclick="toggleMenu()">☰ Menu</button>
@@ -949,6 +921,33 @@ button.closest('tr').remove();
 
 function updateReceipts(){
 
+    async function saveReceipting(){
+
+    const rows =
+        document.querySelectorAll('#receiptingTable tr');
+
+    let data = [];
+
+    rows.forEach((row,index)=>{
+
+        if(index === 0) return;
+
+        const cells = row.querySelectorAll('td');
+
+        data.push({
+            date: cells[0].innerHTML,
+            pallets: cells[1].innerHTML,
+            boxes: cells[2].innerHTML
+        });
+    });
+
+    await db.collection("dashboard")
+        .doc("receipting")
+        .set({
+            data:data
+        });
+}
+
 const date = document.getElementById('receiptDate').value;
 const pallets = Number(document.getElementById('receiptInput').value || 0);
 const boxes = Number(document.getElementById('boxInput').value || 0);
@@ -966,6 +965,37 @@ row.innerHTML = `
    `;
 
 refreshMetrics();
+
+    async function loadReceipting(){
+
+    const snapshot = await db.collection("dashboard")
+        .doc("receipting")
+        .get();
+
+    if(snapshot.exists){
+
+        const saved = snapshot.data().data;
+
+        saved.forEach(item=>{
+
+            const row =
+                document.getElementById('receiptingTable')
+                .insertRow();
+
+            row.innerHTML = `
+            <td>${item.date}</td>
+            <td>${item.pallets}</td>
+            <td>${item.boxes}</td>
+            <td></td>
+            `;
+
+            receipted += Number(item.pallets);
+            receiptedBoxes += Number(item.boxes);
+        });
+
+        refreshMetrics();
+    }
+}
 }
 
 function removeReceipt(button, pallets, boxes){
@@ -973,6 +1003,8 @@ receipted -= pallets;
 receiptedBoxes -= boxes;
 deleteRow(button);
 refreshMetrics();
+
+    saveReceipting();
 }
 
 function updateSorting(){
@@ -1089,6 +1121,10 @@ window.onload = function(){
 defaultSupplies.forEach(item => {
 addSupplyRow(item);
 });
+
+     loadRecoveryPlan();
+
+    loadReceipting();
 }
 
 </script>
