@@ -243,18 +243,17 @@ opacity:0.7;
 <div class="big-number" id="labourTotal">0</div>
 </div>
 
-<div class="card">
-<h2>Pallets Per Hour</h2>
+<h2>Sorting Pallets Per Hour</h2>
 <div class="big-number" id="palletsPerHour">0</div>
 </div>
 
 <div class="card">
-<h2>Boxes Per Hour</h2>
+<h2>Sorting Boxes Per Hour</h2>
 <div class="big-number" id="boxesPerHour">0</div>
 </div>
 
 <div class="card">
-<h2>Estimated 8hr Days Remaining</h2>
+<h2>Estimated Sorting Days Remaining</h2>
 <div class="big-number" id="daysRemaining">0</div>
 </div>
 
@@ -950,27 +949,24 @@ document.getElementById('boxPercent').innerText =
 document.getElementById('roughPercent').innerText =
 ((rough / TOTAL_PALLETS) * 100).toFixed(1) + '%';
 
-// SPEED METRICS
-let sortingPalletsPerHour = labourTotal > 0
+// SORTING SPEED METRICS
+let palletsPerHour = labourTotal > 0
 ? (rough / labourTotal).toFixed(2)
 : 0;
 
-let sortingBoxesPerHour = labourTotal > 0
+// Estimate equivalent boxes sorted based on pallet progress
+let boxesPerHour = labourTotal > 0
 ? ((rough * (TOTAL_BOXES / TOTAL_PALLETS)) / labourTotal).toFixed(2)
 : 0;
 
-document.getElementById('palletsPerHour').innerText = sortingPalletsPerHour;
-document.getElementById('boxesPerHour').innerText = sortingBoxesPerHour;
+document.getElementById('palletsPerHour').innerText = palletsPerHour;
+document.getElementById('boxesPerHour').innerText = boxesPerHour;
 
-// DAYS REMAINING
-let sortingPalletsPerHour = labourTotal > 0
-? (rough / labourTotal)
-: 0;
+// SORTING DAYS REMAINING
+let remainingPallets = TOTAL_PALLETS - rough;
 
-let remainingSortingPallets = TOTAL_PALLETS - rough;
-
-let estimatedDays = sortingPalletsPerHour > 0
-? (remainingSortingPallets / (sortingPalletsPerHour * 8)).toFixed(1)
+let estimatedDays = palletsPerHour > 0
+? (remainingPallets / (palletsPerHour * 8)).toFixed(1)
 : 0;
 
 document.getElementById('daysRemaining').innerText = estimatedDays;
