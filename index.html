@@ -963,10 +963,14 @@ document.getElementById('palletsPerHour').innerText = palletsPerHour;
 document.getElementById('boxesPerHour').innerText = boxesPerHour;
 
 // DAYS REMAINING
-let remainingBoxes = TOTAL_BOXES - receiptedBoxes;
+let sortingPalletsPerHour = labourTotal > 0
+? (rough / labourTotal)
+: 0;
 
-let estimatedDays = boxesPerHour > 0
-? (remainingBoxes / (boxesPerHour * 8)).toFixed(1)
+let remainingSortingPallets = TOTAL_PALLETS - rough;
+
+let estimatedDays = sortingPalletsPerHour > 0
+? (remainingSortingPallets / (sortingPalletsPerHour * 8)).toFixed(1)
 : 0;
 
 document.getElementById('daysRemaining').innerText = estimatedDays;
