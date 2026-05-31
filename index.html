@@ -285,7 +285,7 @@ grid-template-columns:1fr;
 </div>
 
 <div class="card">
-<h2>Estimated Sorting Days Remaining</h2>
+<h2>Estimated Labour Hours Remaining</h2>
 <div class="big-number" id="daysRemaining">0</div>
 </div>
 
@@ -997,12 +997,11 @@ document.getElementById('boxesPerHour').innerText = boxesPerHour;
 // SORTING DAYS REMAINING
 let remainingPallets = TOTAL_PALLETS - rough;
 
-let estimatedDays = palletsPerHour > 0
-? (remainingPallets / (palletsPerHour * 8)).toFixed(1)
+let estimatedHours = palletsPerHour > 0
+? (remainingPallets / palletsPerHour).toFixed(1)
 : 0;
 
-document.getElementById('daysRemaining').innerText = estimatedDays;
-
+document.getElementById('daysRemaining').innerText = estimatedHours;
 }
 
 async function saveAll(){
