@@ -951,16 +951,16 @@ document.getElementById('roughPercent').innerText =
 ((rough / TOTAL_PALLETS) * 100).toFixed(1) + '%';
 
 // SPEED METRICS
-let palletsPerHour = labourTotal > 0
-? (receipted / labourTotal).toFixed(2)
+let sortingPalletsPerHour = labourTotal > 0
+? (rough / labourTotal).toFixed(2)
 : 0;
 
-let boxesPerHour = labourTotal > 0
-? (receiptedBoxes / labourTotal).toFixed(2)
+let sortingBoxesPerHour = labourTotal > 0
+? ((rough * (TOTAL_BOXES / TOTAL_PALLETS)) / labourTotal).toFixed(2)
 : 0;
 
-document.getElementById('palletsPerHour').innerText = palletsPerHour;
-document.getElementById('boxesPerHour').innerText = boxesPerHour;
+document.getElementById('palletsPerHour').innerText = sortingPalletsPerHour;
+document.getElementById('boxesPerHour').innerText = sortingBoxesPerHour;
 
 // DAYS REMAINING
 let sortingPalletsPerHour = labourTotal > 0
